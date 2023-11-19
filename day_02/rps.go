@@ -8,49 +8,35 @@ import (
 
 // https://adventofcode.com/2022/day/2
 
-func GetRoundScore(str string) int {
-	match := map[string]string{
-		"A Y": "WIN",
-		"B Z": "WIN",
-		"C X": "WIN",
-		"A Z": "LOSE",
-		"B X": "LOSE",
-		"C Y": "LOSE",
-		"A X": "DRAW",
-		"B Y": "DRAW",
-		"C Z": "DRAW",
-	}
-
-	roundDecision := map[string]int{
-		"LOSE": 0,
-		"DRAW": 3,
-		"WIN":  6,
-	}
-
-	choicePoints := map[string]int{
-		"X": 1,
-		"Y": 2,
-		"Z": 3,
-	}
-	userChoice := string(str[2])
-	return roundDecision[match[str]] + choicePoints[userChoice]
-}
-
-func GetTotalScore() int {
+func main() {
 	file, err := os.ReadFile("./plays.txt")
 	if err != nil {
 		fmt.Printf("Error opening file: %s\n", err)
 	}
 
-	var totalScore int
+	var part1, part2 int
+	match := map[string]struct {
+		r1, r2 int
+	}{
+		"A Y": {8, 4},
+		"B Z": {9, 9},
+		"C X": {7, 2},
+		"A Z": {3, 8},
+		"B X": {1, 1},
+		"C Y": {2, 6},
+		"A X": {4, 3},
+		"B Y": {5, 5},
+		"C Z": {6, 7},
+	}
+
 	for _, line := range strings.Split(strings.TrimSpace(string(file)), "\n") {
 		if line != "" {
-			totalScore += GetRoundScore(line)
+			p := match[line]
+			part1 += p.r1
+			part2 += p.r2
 		}
 	}
-	return totalScore
-}
 
-func main() {
-	fmt.Println(GetTotalScore())
+	fmt.Println(part1)
+	fmt.Println(part2)
 }
