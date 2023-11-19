@@ -10,22 +10,43 @@ import (
 
 func GetItemType(str string) int {
 	split := len([]rune(str)) / 2
-	duplicateItem := map[rune]bool{}
+	seenCharacters := map[rune]bool{}
 	for _, v := range []rune(str[:split]) {
-		if duplicateItem[v] {
-			continue
+		if !seenCharacters[v] {
+			seenCharacters[v] = true
 		}
-		duplicateItem[v] = true
 	}
 	for _, v := range []rune(str[split:]) {
-		if duplicateItem[v] {
-			return GetPrioritySum(string(v))
+		if seenCharacters[v] {
+			return GetValue(string(v))
 		}
 	}
 	return 0
 }
 
-func GetPrioritySum(str string) int {
+func GetGroupItemType(str []string) int {
+	var triple string
+	seenCharacters := map[rune]bool{}
+	for _, v := range []rune(str[0]) {
+		if !seenCharacters[v] {
+			seenCharacters[v] = true
+		}
+	}
+	for _, v := range []rune(str[1]) {
+		if seenCharacters[v] {
+			triple += string(v)
+		}
+	}
+
+	for _, v := range []rune(str[2]) {
+		if strings.Contains(triple, string(v)) {
+			return GetValue(string(v))
+		}
+	}
+	return 0
+}
+
+func GetValue(str string) int {
 	count := map[string]int{
 		"a": 1,
 		"b": 2,
@@ -69,13 +90,21 @@ func main() {
 		fmt.Printf("Error opening file: %v", err)
 	}
 
-	var points int
+	var points, points2, count int
+	var args []string
 
 	for _, str := range strings.Split(strings.TrimSpace(string(file)), "\n") {
 		if str != "" {
 			points += GetItemType(str)
+			args = append(args, str)
+			if len(args) == 3 {
+				count = 0
+				points2 += GetGroupItemType(args)
+				args = []string{}
+			}
+			count++
 		}
 	}
 
-	fmt.Println(points)
+	fmt.Println(points2)
 }
